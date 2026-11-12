@@ -27,7 +27,7 @@ public class TestCases {
 
      
     // Replace with the "this google form" link from the buildout page
-    private static final String FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSep9LTMntH5YqIXa5nJn1TQ2GqYa5-5SjNCvdRNkb6c8h8MfA/viewform";
+    private static final String FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSep9LTMntH5YqIXa5nkiPKSs283kdwitBBhXWyZdAS-e4CxBQ/viewform";
 
     // Builds an XPath that finds the container of a question by its title
     private By question(String title, String inner) {
@@ -40,11 +40,11 @@ public class TestCases {
         Wrappers.navigateTo(driver, FORM_URL);
 
         // Step 2: fill the name
-        Wrappers.typeText(driver, question("Name", "//input[@type='text']"), "Crio Learner");
+        Wrappers.typeText(driver, question("Name", "//*[(self::input or self::textarea) and not(@type='hidden') and not(@aria-hidden='true')]"), "Crio Learner");
 
         // Step 3: practice reason with the current epoch time
         long epoch = Instant.now().getEpochSecond();
-        Wrappers.typeText(driver, question("Why are you practicing Automation", "//textarea"),
+        Wrappers.typeText(driver, question("Why are you practicing Automation", "//*[(self::input or self::textarea) and not(@type='hidden') and not(@aria-hidden='true')]"),
                 "I want to be the best QA Engineer! " + epoch);
 
         // Step 4: automation experience radio button
@@ -57,8 +57,8 @@ public class TestCases {
 
         // Step 6: choose how to be addressed from the dropdown
         Wrappers.clickElement(driver, question("How should you be addressed", "//div[@role='listbox']"));
-        Wrappers.clickElement(driver, By.xpath(
-                "//div[@role='listbox']/following::div[@role='option' and @data-value='Mr']"));
+        // Pick the first real option (skips the empty "Choose" placeholder)
+        Wrappers.clickElement(driver, By.xpath("(//div[@role='option' and string-length(@data-value)>0])[1]"));
 
         // Step 7: date 7 days ago, calculated dynamically
         String date = LocalDate.now().minusDays(7).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
@@ -70,6 +70,7 @@ public class TestCases {
 
         // Step 9: submit the form
         Wrappers.clickElement(driver, By.xpath("//span[text()='Submit']"));
+        System.out.println("Form submitted");
 
         // Print the success message (sleep in case a captcha has to be solved manually)
         Thread.sleep(3000);

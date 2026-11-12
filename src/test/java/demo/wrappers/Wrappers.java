@@ -21,7 +21,6 @@ public class Wrappers {
     public static void typeText(ChromeDriver driver, By locator, String text) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIMEOUT_SECONDS));
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-        element.clear();
         element.sendKeys(text);
     }
 
